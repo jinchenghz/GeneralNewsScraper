@@ -1,0 +1,4 @@
+lxml==5.2.2
+playwright==1.44.0
+loguru==0.7.2
+pyspellchecker==0.8.1
