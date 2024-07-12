@@ -1,5 +1,4 @@
 import os
-from playwright.async_api import async_playwright
 
 
 class BrowserContext:
@@ -13,6 +12,7 @@ class BrowserContext:
         self.page = None
 
     async def initialize(self):
+        from playwright.async_api import async_playwright
         current_dir_path = os.path.abspath(os.path.dirname(__file__))
         playwright = await async_playwright().start()
         self.browser = await playwright.chromium.launch(headless=True)
