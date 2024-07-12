@@ -24,11 +24,15 @@
 
 ![img_3.png](./static/img_3.png)
 # USAGE
+首先安装项目依赖：pip install -r requirements.txt
+
 本项目提供两种用法：
 1. url模式: 传参为url。需要安装playwright, 以及根据提示playwright install安装浏览器内核。通过浏览器下载完整html.
 2. html模式: 传参为url以及html。此时GNS将不做任何网络请求，url的作用仅做为网站logo以及媒体文件url拼接。
 
-解析文章列表页
+如果只想使用html模式，也可不下载playwright
+
+### 解析文章列表页
 ```python
 from GeneralNewsScraper import GNS
 
@@ -38,7 +42,7 @@ print(articles)
 
 ```
 
-解析文章详情页
+### 解析文章详情页
 ```python
 from GeneralNewsScraper import GNS
 
