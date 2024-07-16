@@ -73,7 +73,7 @@ def parse_article_title(article_html):
     """
     patterns = [
         '<meta property="[^"]*?title" content="([^"]+?)">',
-        '<h1>(.+?)<',
+        '<h1[^>]*?>(.+?)<',
         '<title[^>]*?>(.+?)</title>'
     ]
 
@@ -154,9 +154,9 @@ def parse_article_content(html, url):
 
 
 def parse_top_image(html):
-    image = re.findall('<meta content="([^"]*?)" property="[^"]*?image"', html)
+    image = re.findall('<meta[^>]*?content="([^"]*?)"[^>]*?property="[^"]*?image"', html)
     if not image:
-        image = re.findall('<meta property="[^"]*?image" content="([^"]*?)"', html)
+        image = re.findall('<meta[^>]*?property="[^"]*?image"[^>]*?content="([^"]*?)"', html)
     return image[0] if image else None
 
 
