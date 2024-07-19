@@ -66,8 +66,8 @@ class GNS:
         # 获取网站logo
         logo = parse_logo(url, article_html)
 
-        if top_image and top_image not in page_content["imageList"]:
-            page_content["imageList"] = [top_image] + page_content["imageList"]
+        if not page_content["imageList"] and top_image:
+            page_content["imageList"] = [top_image]
 
         item = {
             'url': url,
