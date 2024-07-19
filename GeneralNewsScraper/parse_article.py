@@ -58,6 +58,9 @@ def get_longest_node(html, node_name):
     max_count = 0
     max_node_text = ''
     for node in node_list:
+        # 增加异常判断条件
+        if 'cookies' in node:
+            continue
         count = len(node.strip())
         if count > max_count:
             max_count = count
