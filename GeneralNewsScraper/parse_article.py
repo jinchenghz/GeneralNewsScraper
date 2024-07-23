@@ -88,9 +88,9 @@ def parse_article_title(article_html):
     else:
         raise Exception("未匹配到标题")
     title = re.sub(r'<[^>]+>', '', title)
-    title = title.split('-')[0].strip()
-    title = title.split('_')[0].strip()
-    title = title.split('|')[0].strip()
+    # title = title.split('-')[0].strip()
+    # title = title.split('_')[0].strip()
+    # title = title.split('|')[0].strip()
     return title
 
 
