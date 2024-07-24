@@ -25,14 +25,17 @@ class BrowserContext:
     async def download_html(self, url):
         try:
             await self.page.goto(url, wait_until='networkidle', timeout=30000)
+            return await self.page.content()
         except Exception as e:
             print(f"Failed to load URL, trying again: {e}")
             try:
                 await self.page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                return await self.page.content()
             except Exception as e:
                 print(f"Failed to load URL after retry: {e}")
                 raise e
-        return await self.page.content()
+        finally:
+            await self.browser.close()
 
     async def request_get(self, url):
         response = await self.page.request.get(url)
