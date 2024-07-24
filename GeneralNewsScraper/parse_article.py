@@ -171,7 +171,7 @@ def parse_site_name(html):
     """
     ret = re.findall('property="og:site_name" content="([^"]*?)"', html)
     if not ret:
-        ret = re.findall('<title>[^_\-|<]*?[_\-|](.+?)</title>', html)
+        ret = re.findall('<title[^>]*?>[^_\-|<]*?[_\-|](.+?)</title>', html)
         if not ret:
             return None
     webName = ret[0]
