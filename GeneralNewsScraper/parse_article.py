@@ -11,7 +11,7 @@ def pre_process_article(page_html):
     :return:
     """
     regex_patterns = [
-        r'<script[^>]*?>.*?</script>',
+        # r'<script[^>]*?>.*?</script>',
         r'<style[^>]*?>.*?</style>',
         r'<!--.*?-->',
         r'Notice: The content above \(including the pictures and videos if any\) is uploaded and posted by a user of NetEase Hao, which is a social media platform and only provides information storage services.',
@@ -28,8 +28,8 @@ def parse_time(html):
     :return: 字符串类型时间
     """
     regex_patterns = [
-        '"(20[012]\d-[01]\d-[0-3]\d[ T]+[012]\d:[0-5]\d:[0-5]\d)"',
-        '"(20[012]\d-[01]\d-[0-3]\d[ T]+[012]\d:[0-5]\d)"',
+        '"(20[012]\d-[01]\d-[0-3]\d[ T]+[012]\d:[0-5]\d:[0-5]\d)',
+        '"(20[012]\d-[01]\d-[0-3]\d[ T]+[012]\d:[0-5]\d)',
         '(20[012]\d-[01]\d-[0-3]\d[ T]+[012]\d:[0-5]\d:[0-5]\d)',
         '(20[012]\d-[01]\d-[0-3]\d[ T]+[012]\d:[0-5]\d)',
         '(20[012]\d-[01]\d-[0-3]\d)',
@@ -106,7 +106,9 @@ def parse_article_content(html, url):
     :return:
     """
     if isinstance(html, str):
-        html = etree.HTML(html)
+        # 去除script标签
+        html_str = re.sub(r'<script[^>]*?>.*?</script>', '', html, flags=re.S)
+        html = etree.HTML(html_str)
     max_p_text = get_longest_node(html, 'p')
     max_div_text = get_longest_node(html, 'div')
     target_node = 'p' if len(max_p_text) > len(max_div_text) else 'div'
