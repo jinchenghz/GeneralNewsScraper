@@ -37,7 +37,8 @@
 from GeneralNewsScraper import GNS
 
 _html = """ html示例 """
-articles = GNS.article_list(url="https://www.voachinese.com/", html=_html)
+# html非必传；pagination非必传
+articles = GNS.article_list(url="https://www.voachinese.com/", html=_html, pagination=1)
 print(articles)
 
 ```
@@ -47,6 +48,7 @@ print(articles)
 from GeneralNewsScraper import GNS
 
 _html = """ html示例 """
+# html非必传
 article_info = GNS.article(url="https://www.voachinese.com/a/exiled-chinese-businessman-guo-s-trial-nears-close/7693596.html", html=_html)
 print(article_info)
 

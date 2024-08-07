@@ -36,6 +36,7 @@ class BrowserContext:
                 raise e
         finally:
             await self.browser.close()
+            self.browser = None
 
     async def request_get(self, url):
         response = await self.page.request.get(url)

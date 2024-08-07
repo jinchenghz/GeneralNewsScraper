@@ -1,5 +1,6 @@
 import asyncio
-from loguru import logger
+from urllib.parse import urljoin
+from lxml import etree
 from GeneralNewsScraper.BrowserContextAsync import BrowserContext
 from GeneralNewsScraper.parse_article import parse_article_title, parse_article_content, parse_time, \
     pre_process_article, parse_top_image, parse_site_name, parse_domain, parse_logo
@@ -9,24 +10,53 @@ from GeneralNewsScraper.parse_article_list import parse_article_list
 class GNS:
     def __init__(self):
         self.browserContext = BrowserContext()
+        self.pagination_count = 0
+        self.article_list = []
+        self.article_url_list = []
 
-    async def parse_article_list_async(self, url=None, html=None):
+    async def parse_article_list_async(self, url, html=None, pagination=0):
         """
         提取新闻网站列表页的文章url
+        :param pagination: 翻页数
         :param url: 网站列表页url
         :param html:
         :return: 文章列表
         """
-        if not (url or html):
-            logger.error("url以及html参数不能同时为空")
         if not html:
             if not self.browserContext.browser:
                 await self.browserContext.initialize()
             page_html = await self.browserContext.download_html(url)
         else:
             page_html = html
-        article_list = parse_article_list(page_html, url)
-        return article_list
+
+        _article_list = parse_article_list(page_html, url)
+        for _article in _article_list:
+            if _article["url"] not in self.article_url_list:
+                self.article_url_list.append(_article["url"])
+                self.article_list.append(_article)
+
+        # 翻页
+        _html = etree.HTML(page_html)
+        pagination_regex = [
+            "//a[text()='Next']/@href",
+            "//a/span[text()='Next']/../../a/@href",
+            "//a[text()='下一页']/@href",
+            "//a/span[text()='下一页']/../../a/@href",
+        ]
+        pagination_url = None
+        for pagination_regex_item in pagination_regex:
+            pagination_url = _html.xpath(pagination_regex_item)
+            if pagination_url:
+                break
+        if pagination_url and self.pagination_count < pagination:
+            pagination_url = pagination_url[0]
+            if not pagination_url.startswith("http"):
+                pagination_url = urljoin(url, pagination_url)
+            # print("翻页：", pagination_url)
+            self.pagination_count += 1
+            await self.parse_article_list_async(pagination_url, pagination=pagination)
+
+        return self.article_list
 
     async def parse_article_async(self, url, html=None):
         """
@@ -84,8 +114,8 @@ class GNS:
         return item
 
 
-def article_list(url=None, html=None):
-    articles = asyncio.run(GNS().parse_article_list_async(url=url, html=html))
+def article_list(url, html=None, pagination=0):
+    articles = asyncio.run(GNS().parse_article_list_async(url=url, html=html, pagination=pagination))
     return articles
 
 
