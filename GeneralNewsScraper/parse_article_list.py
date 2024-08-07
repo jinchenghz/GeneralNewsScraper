@@ -33,7 +33,7 @@ def verify_obvious_article_url(url):
     :param url:
     :return:
     """
-    tags = ['/a/', '/article/', '/articles/']
+    tags = ['/a/', '/article/', '/articles/', '/read/']
     for tag in tags:
         if tag in url:
             return True
