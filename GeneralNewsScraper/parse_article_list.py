@@ -1,9 +1,5 @@
 import re
-from pprint import pprint
 from urllib.parse import urljoin, urlparse
-
-from loguru import logger
-
 from GeneralNewsScraper.utils import spell_check
 
 
