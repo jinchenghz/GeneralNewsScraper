@@ -25,7 +25,7 @@ class GNS:
         if not html:
             if not self.browserContext.browser:
                 await self.browserContext.initialize()
-            page_html = await self.browserContext.download_html(url)
+            page_html, page_url = await self.browserContext.download_html(url)
         else:
             page_html = html
 
@@ -69,7 +69,7 @@ class GNS:
             if not self.browserContext.browser:
                 await self.browserContext.initialize()
 
-            article_html = await self.browserContext.download_html(url)
+            article_html, page_url = await self.browserContext.download_html(url)
         else:
             article_html = html
         # 文章内容预处理
@@ -82,7 +82,7 @@ class GNS:
         title = parse_article_title(article_html)
 
         # 获取文章内容
-        page_content = parse_article_content(article_html, url)
+        page_content = parse_article_content(article_html, page_url)
 
         # 获取文章主图片
         top_image = parse_top_image(article_html)
@@ -91,16 +91,16 @@ class GNS:
         site_name = parse_site_name(article_html)
 
         # 获取域名
-        domain = parse_domain(url)
+        domain = parse_domain(page_url)
 
         # 获取网站logo
-        logo = parse_logo(url, article_html)
+        logo = parse_logo(page_url, article_html)
 
         if not page_content["imageList"] and top_image:
             page_content["imageList"] = [top_image]
 
         item = {
-            'url': url,
+            'url': page_url,
             'title': title,
             'pubTime': pub_time,
             "topImage": top_image,

@@ -25,18 +25,17 @@ class BrowserContext:
     async def download_html(self, url):
         try:
             await self.page.goto(url, wait_until='networkidle', timeout=30000)
-            return await self.page.content()
+            return await self.page.content(), self.page.url
         except Exception as e:
             print(f"Failed to load URL, trying again: {e}")
             try:
                 await self.page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                return await self.page.content()
+                return await self.page.content(), self.page.url
             except Exception as e:
                 print(f"Failed to load URL after retry: {e}")
                 raise e
         finally:
-            await self.browser.close()
-            self.browser = None
+            await self.close()
 
     async def request_get(self, url):
         response = await self.page.request.get(url)
@@ -44,5 +43,6 @@ class BrowserContext:
         return content.decode()
 
     async def close(self):
-        if self.browser:
-            await self.browser.close()
+        await self.browser.close()
+        self.browser = None
+
