@@ -71,7 +71,7 @@ class GNS:
 
             article_html, page_url = await self.browserContext.download_html(url)
         else:
-            article_html = html
+            article_html, page_url = html, url
         # 文章内容预处理
         article_html = pre_process_article(article_html)
 
