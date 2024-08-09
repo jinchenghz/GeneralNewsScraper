@@ -76,8 +76,8 @@ def parse_article_title(article_html):
     """
     patterns = [
         '<meta property="[^"]*?title" content="([^"]+?)">',
+        '<title[^>]*?>(.+?)</title>',
         '<h1[^>]*?>(.+?)<',
-        '<title[^>]*?>(.+?)</title>'
     ]
 
     for pattern in patterns:
