@@ -194,10 +194,15 @@ def parse_logo(url, html):
     :param html:
     :return:
     """
-    icon_url = re.findall('="([^"]*?.ico)"', html)
-    if icon_url:
-        icon_url = icon_url[0]
-        return icon_url if icon_url.startswith("http") else urljoin(url, icon_url)
+    patterns = [
+        '"([^"]*?.ico)"',
+        '<[^>]*?="[^"]*?icon"[^>]*? href="([^"]*?)"',
+    ]
+    for pattern in patterns:
+        match = re.search(pattern, html)
+        if match:
+            icon_url = match.group(1)
+            return icon_url if icon_url.startswith("http") else urljoin(url, icon_url)
     # 获取url域名
     _url = urlparse(url)
     _hostname = _url.hostname
