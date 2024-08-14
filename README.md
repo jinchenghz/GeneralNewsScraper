@@ -17,12 +17,6 @@
 - 网站logo
 - 网站域名
 
-# 效果演示
-![img.png](./static/img.png)
-
-![img_1.png](./static/img_1.png)
-
-![img_3.png](./static/img_3.png)
 # USAGE
 安装项目:
 ```bash
@@ -55,6 +49,13 @@ article_info = GNS.article(url="https://www.voachinese.com/a/exiled-chinese-busi
 print(article_info)
 
 ```
+# 效果演示
+![img.png](./static/img.png)
+
+![img_1.png](./static/img_1.png)
+
+![img_3.png](./static/img_3.png)
+
 有问题请联系：jinchenghz@foxmail.com
 
 ### 免责声明：本项目仅供学习参考，请勿用于非法用途，否则后果自负。
