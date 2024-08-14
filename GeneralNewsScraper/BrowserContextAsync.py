@@ -1,4 +1,7 @@
 import os
+from playwright.async_api import async_playwright
+
+current_dir_path = os.path.abspath(os.path.dirname(__file__))
 
 
 class BrowserContext:
@@ -10,12 +13,11 @@ class BrowserContext:
         self.browser = None
         self.context = None
         self.page = None
+        self.playwright = None
 
     async def initialize(self):
-        from playwright.async_api import async_playwright
-        current_dir_path = os.path.abspath(os.path.dirname(__file__))
-        playwright = await async_playwright().start()
-        self.browser = await playwright.chromium.launch(headless=True)
+        self.playwright = await async_playwright().start()
+        self.browser = await self.playwright.chromium.launch(headless=True)
         self.context = await self.browser.new_context()
         self.page = await self.context.new_page()
         with open(f'{current_dir_path}/stealth.min.js', 'r') as f:
@@ -44,5 +46,6 @@ class BrowserContext:
 
     async def close(self):
         await self.browser.close()
+        await self.playwright
         self.browser = None
 
