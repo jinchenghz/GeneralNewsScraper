@@ -33,7 +33,6 @@ pip install GeneralNewsScraper
 1. url模式: 传参为url。需要安装playwright, 以及根据提示playwright install安装浏览器内核。通过浏览器下载完整html.
 2. html模式: 传参为url以及html。此时GNS将不做任何网络请求，url的作用仅做为网站logo以及媒体文件url拼接。
 
-如果只想使用html模式，也可不下载playwright
 
 ### 解析文章列表页
 ```python
