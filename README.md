@@ -24,8 +24,10 @@
 
 ![img_3.png](./static/img_3.png)
 # USAGE
-首先安装项目:
-    pip install GeneralNewsScraper
+安装项目:
+```bash
+pip install GeneralNewsScraper
+```
 
 本项目提供两种用法：
 1. url模式: 传参为url。需要安装playwright, 以及根据提示playwright install安装浏览器内核。通过浏览器下载完整html.
