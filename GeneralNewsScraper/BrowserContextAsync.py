@@ -45,7 +45,8 @@ class BrowserContext:
         return content.decode()
 
     async def close(self):
-        await self.browser.close()
-        await self.playwright
-        self.browser = None
+        if self.browser:
+            await self.browser.close()
+            await self.playwright.stop()
+            self.browser = None
 
