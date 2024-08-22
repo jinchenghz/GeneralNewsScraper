@@ -1,3 +1,4 @@
+import datetime
 import re
 from urllib.parse import urljoin, urlparse
 from lxml import etree
@@ -35,16 +36,19 @@ def parse_time(html):
         '(20[012]\d-[01]\d-[0-3]\d)',
     ]
     for regex in regex_patterns:
-        match = re.search(regex, html)
+        match = re.findall(regex, html)
         if match:
-            pub_time = match.group(1).strip()
-            pub_time = pub_time.replace('T', ' ')
-            if not re.search('\d{2}:\d{2}:\d{2}', pub_time):
-                if not re.search('\d{2}:\d{2}', pub_time):
-                    pub_time = pub_time + ' 00:00:00'
-                elif re.search('\d{2}:\d{2}', pub_time):
-                    pub_time = pub_time + ':00'
-            return pub_time
+            for m in match:
+                pub_time = m.strip()
+                pub_time = pub_time.replace('T', ' ')
+                if not re.search('\d{2}:\d{2}:\d{2}', pub_time):
+                    if not re.search('\d{2}:\d{2}', pub_time):
+                        pub_time = pub_time + ' 00:00:00'
+                    elif re.search('\d{2}:\d{2}', pub_time):
+                        pub_time = pub_time + ':00'
+                if datetime.datetime.strptime(pub_time, '%Y-%m-%d %H:%M:%S').timestamp() > datetime.datetime.now().timestamp():
+                    continue
+                return pub_time
 
 
 def get_longest_node(html, node_name):
