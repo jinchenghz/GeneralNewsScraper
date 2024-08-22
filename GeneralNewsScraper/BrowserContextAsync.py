@@ -47,6 +47,9 @@ class BrowserContext:
     async def close(self):
         if self.browser:
             await self.browser.close()
-            await self.playwright.stop()
             self.browser = None
+        if self.playwright:
+            await self.playwright.stop()
+            self.playwright = None
+
 
