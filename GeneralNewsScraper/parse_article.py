@@ -64,7 +64,7 @@ def get_longest_node(html, node_name):
     for node in node_list:
         # 增加异常判断条件
         if 'cookies' in node or 'copyright' in node or 'Copyright' in node or 'All rights reserved' in node:
-            print(node)
+            # print(node)
             continue
         count = len(node.strip())
         if count > max_count:
@@ -193,6 +193,7 @@ def parse_site_name(html):
     #     webName = webName.split('_')[-1]
     #
     # return webName.strip()
+
 
 
 def parse_logo(url, html):

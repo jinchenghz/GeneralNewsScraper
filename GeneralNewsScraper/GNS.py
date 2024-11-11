@@ -60,7 +60,7 @@ class GNS:
                 await self.parse_article_list_async(pagination_url, pagination=pagination)
         finally:
             await browserContext.close()
-        print("文章列表：", self.article_list)
+        # print("文章列表：", self.article_list)
         return self.article_list
 
     async def parse_article_async(self, url, html=None):
@@ -94,11 +94,22 @@ class GNS:
             # 获取文章主图片
             top_image = parse_top_image(article_html)
 
+            # 获取域名
+            domain = parse_domain(page_url)
+
             # 获取网站名称
             site_name = parse_site_name(article_html)
 
-            # 获取域名
-            domain = parse_domain(page_url)
+            def get_website_name():
+                parts = domain.split('.')
+                if parts[0] == 'www':
+                    return parts[1]
+                elif 'com' in parts:
+                    return parts[parts.index('com') - 1]
+                else:
+                    return parts[0]
+            if site_name is None:
+                site_name = get_website_name().upper()
 
             # 获取网站logo
             logo = parse_logo(page_url, article_html)
