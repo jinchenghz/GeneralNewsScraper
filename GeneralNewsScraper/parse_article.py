@@ -63,7 +63,8 @@ def get_longest_node(html, node_name):
     max_node_text = ''
     for node in node_list:
         # 增加异常判断条件
-        if 'cookies' in node:
+        if 'cookies' in node or 'copyright' in node or 'Copyright' in node or 'All rights reserved' in node:
+            print(node)
             continue
         count = len(node.strip())
         if count > max_count:
@@ -80,7 +81,7 @@ def parse_article_title(article_html):
     """
     patterns = [
         '<meta property="[^"]*?title" content="([^"]+?)">',
-        '<title[^>]*?>(.+?)</title>',
+        '<title[^>]*?>\s*(.+?)\s*</title>',
         '<h1[^>]*?>(.+?)<',
     ]
 
@@ -110,8 +111,9 @@ def parse_article_content(html, url):
     :return:
     """
     if isinstance(html, str):
-        # 去除script标签
         html_str = re.sub(r'<script[^>]*?>.*?</script>', '', html, flags=re.S)
+        html_str = re.sub(r'<style[^>]*?>.*?</style>', '', html_str, flags=re.S)
+        html_str = re.sub(r'<path[^>]*?>.*?</path>', '', html_str, flags=re.S)
         html = etree.HTML(html_str)
     max_p_text = get_longest_node(html, 'p')
     max_div_text = get_longest_node(html, 'div')
@@ -176,19 +178,21 @@ def parse_site_name(html):
     :return:
     """
     ret = re.findall('property="og:site_name" content="([^"]*?)"', html)
-    if not ret:
-        ret = re.findall('<title[^>]*?>[^_\-|<]*?[_\-|](.+?)</title>', html)
-        if not ret:
-            return None
-    webName = ret[0]
-    if '-' in ret[0]:
-        webName = webName.split('-')[-1]
-    if '|' in ret[0]:
-        webName = webName.split('|')[-1]
-    if '_' in ret[0]:
-        webName = webName.split('_')[-1]
-
-    return webName.strip()
+    if ret:
+        return ret[0]
+    # if not ret:
+    #     ret = re.findall('<title[^>]*?>[^_\-|<]*?[_\-|](.+?)</title>', html)
+    #     if not ret:
+    #         return None
+    # webName = ret[0]
+    # if '-' in ret[0]:
+    #     webName = webName.split('-')[-1]
+    # if '|' in ret[0]:
+    #     webName = webName.split('|')[-1]
+    # if '_' in ret[0]:
+    #     webName = webName.split('_')[-1]
+    #
+    # return webName.strip()
 
 
 def parse_logo(url, html):

@@ -1,5 +1,8 @@
+import time
 from urllib.parse import urlparse
 from spellchecker import SpellChecker
+
+spell = SpellChecker(language='en')
 
 
 def is_valid_url(url):
@@ -27,6 +30,5 @@ def spell_check(words: list):
             result_list.append(word)
         elif len(word) >= 20:
             result_list.append(word)
-    spell = SpellChecker(language='en')
     misspelled = spell.unknown(words)
     return list(misspelled) + result_list

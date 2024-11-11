@@ -1,4 +1,5 @@
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 from urllib.parse import urljoin
 from lxml import etree
 from GeneralNewsScraper.BrowserContextAsync import BrowserContext
@@ -9,7 +10,7 @@ from GeneralNewsScraper.parse_article_list import parse_article_list
 
 class GNS:
     def __init__(self):
-        self.browserContext = BrowserContext()
+        # self.browserContext = BrowserContext()
         self.pagination_count = 0
         self.article_list = []
         self.article_url_list = []
@@ -22,11 +23,12 @@ class GNS:
         :param html:
         :return: 文章列表
         """
+        browserContext = BrowserContext()
         try:
             if not html:
-                if not self.browserContext.browser:
-                    await self.browserContext.initialize()
-                page_html, page_url = await self.browserContext.download_html(url)
+                if not browserContext.browser:
+                    await browserContext.initialize()
+                page_html, page_url = await browserContext.download_html(url)
             else:
                 page_html = html
 
@@ -57,8 +59,8 @@ class GNS:
                 self.pagination_count += 1
                 await self.parse_article_list_async(pagination_url, pagination=pagination)
         finally:
-            await self.browserContext.close()
-
+            await browserContext.close()
+        print("文章列表：", self.article_list)
         return self.article_list
 
     async def parse_article_async(self, url, html=None):
@@ -68,12 +70,13 @@ class GNS:
         :param html: 文章html
         :return: 文章数据
         """
+        browserContext = BrowserContext()
         try:
             if not html:
-                if not self.browserContext.browser:
-                    await self.browserContext.initialize()
+                if not browserContext.browser:
+                    await browserContext.initialize()
 
-                article_html, page_url = await self.browserContext.download_html(url)
+                article_html, page_url = await browserContext.download_html(url)
             else:
                 article_html, page_url = html, url
             # 文章内容预处理
@@ -116,9 +119,25 @@ class GNS:
                 'videoList': page_content["videoList"],
             }
         finally:
-            await self.browserContext.close()
-
+            await browserContext.close()
         return item
+
+    def run_parse_article(self, url):
+        asyncio.run(self.parse_article_async(url))
+
+    async def parse_article_all_async(self, url):
+        """
+        解析文章数据
+        :param url: url
+        :return: 文章数据列表
+        """
+        url_list = [i["url"] for i in await self.parse_article_list_async(url)]
+        with ThreadPoolExecutor(max_workers=6) as executor:
+            loop = asyncio.get_running_loop()
+            tasks = []
+            for url in url_list:
+                tasks.append(loop.run_in_executor(executor, self.run_parse_article, url))
+            await asyncio.gather(*tasks)
 
 
 def article_list(url, html=None, pagination=0):
@@ -129,3 +148,8 @@ def article_list(url, html=None, pagination=0):
 def article(url, html=None):
     article_info = asyncio.run(GNS().parse_article_async(url=url, html=html))
     return article_info
+
+
+def article_parse_all(url):
+    article_info_list = asyncio.run(GNS().parse_article_all_async(url))
+    return article_info_list
