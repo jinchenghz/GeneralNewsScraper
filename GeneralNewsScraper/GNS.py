@@ -120,13 +120,14 @@ class GNS:
         }
         return item
 
-    async def parse_article_all_async(self, url):
+    async def parse_article_all_async(self, url, html=None):
         """
         解析文章数据
-        :param url: url
+        :param html:
+        :param url:
         :return: 文章数据列表
         """
-        url_list = await self.parse_article_list_async(url)
+        url_list = await self.parse_article_list_async(url, html)
         tasks = [self.parse_article_async(url["url"]) for url in url_list]
         results = await asyncio.gather(*tasks)
         return results
@@ -152,11 +153,11 @@ async def article_async(url, html=None):
     return article_info
 
 
-def article_parse_all(url):
-    article_info_list = asyncio.run(GNS().parse_article_all_async(url))
+def article_parse_all(url, html=None):
+    article_info_list = asyncio.run(GNS().parse_article_all_async(url, html=html))
     return article_info_list
 
 
-async def article_parse_all_async(url):
-    article_info_list = await GNS().parse_article_all_async(url)
+async def article_parse_all_async(url, html=None):
+    article_info_list = await GNS().parse_article_all_async(url, html=html)
     return article_info_list
