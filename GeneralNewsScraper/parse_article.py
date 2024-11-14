@@ -5,7 +5,7 @@ from lxml import etree
 from GeneralNewsScraper.utils import is_valid_url
 
 
-def pre_process_article(page_html):
+async def pre_process_article(page_html):
     """
     文章内容预处理
     :param article_html:
@@ -22,7 +22,7 @@ def pre_process_article(page_html):
     return page_html
 
 
-def parse_time(html):
+async def parse_time(html):
     """
     html 中提取时间
     :param html:
@@ -46,12 +46,13 @@ def parse_time(html):
                         pub_time = pub_time + ' 00:00:00'
                     elif re.search('\d{2}:\d{2}', pub_time):
                         pub_time = pub_time + ':00'
-                if datetime.datetime.strptime(pub_time, '%Y-%m-%d %H:%M:%S').timestamp() > datetime.datetime.now().timestamp():
+                if datetime.datetime.strptime(pub_time,
+                                              '%Y-%m-%d %H:%M:%S').timestamp() > datetime.datetime.now().timestamp():
                     continue
                 return pub_time
 
 
-def get_longest_node(html, node_name):
+async def get_longest_node(html, node_name):
     """
     获取最长文本的node标签
     :param html:
@@ -73,7 +74,7 @@ def get_longest_node(html, node_name):
     return max_node_text
 
 
-def parse_article_title(article_html):
+async def parse_article_title(article_html):
     """
     获取文章标题
     :param article_html:
@@ -99,7 +100,7 @@ def parse_article_title(article_html):
     return title
 
 
-def parse_article_content(html, url):
+async def parse_article_content(html, url):
     """
     获取文章内容
     思路：
@@ -115,8 +116,8 @@ def parse_article_content(html, url):
         html_str = re.sub(r'<style[^>]*?>.*?</style>', '', html_str, flags=re.S)
         html_str = re.sub(r'<path[^>]*?>.*?</path>', '', html_str, flags=re.S)
         html = etree.HTML(html_str)
-    max_p_text = get_longest_node(html, 'p')
-    max_div_text = get_longest_node(html, 'div')
+    max_p_text = await get_longest_node(html, 'p')
+    max_div_text = await get_longest_node(html, 'div')
     target_node = 'p' if len(max_p_text) > len(max_div_text) else 'div'
     max_node_text = max_p_text if len(max_p_text) > len(max_div_text) else max_div_text
     node_list = html.xpath('//*')
@@ -146,7 +147,7 @@ def parse_article_content(html, url):
                         continue
                     if not img.startswith('http'):
                         img = urljoin(url, img)
-                    if is_valid_url(img):
+                    if await is_valid_url(img):
                         img_list.append(img)
 
                 _video_list = node.xpath('.//video/@src')
@@ -157,21 +158,21 @@ def parse_article_content(html, url):
                         continue
                     if not video.startswith('http'):
                         video = urljoin(url, video)
-                    if is_valid_url(video):
+                    if await is_valid_url(video):
                         video_list.append(video)
                 break
 
     return {"content": content, "imageList": img_list, "videoList": video_list}
 
 
-def parse_top_image(html):
+async def parse_top_image(html):
     image = re.findall('<meta[^>]*?content="([^"]*?)"[^>]*?property="[^"]*?image"', html)
     if not image:
         image = re.findall('<meta[^>]*?property="[^"]*?image"[^>]*?content="([^"]*?)"', html)
     return image[0] if image else None
 
 
-def parse_site_name(html):
+async def parse_site_name(html):
     """
     获取网站名称
     :param html:
@@ -195,8 +196,7 @@ def parse_site_name(html):
     # return webName.strip()
 
 
-
-def parse_logo(url, html):
+async def parse_logo(url, html):
     """
     获取网站icon
     :param url:
@@ -223,7 +223,7 @@ def parse_logo(url, html):
     return _scheme + '://' + _url.hostname + '/favicon.ico'
 
 
-def parse_domain(url):
+async def parse_domain(url):
     """
     获取域名
     :param url:

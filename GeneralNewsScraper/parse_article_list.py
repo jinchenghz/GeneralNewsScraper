@@ -3,7 +3,7 @@ from urllib.parse import urljoin, urlparse
 from GeneralNewsScraper.utils import spell_check
 
 
-def parse_id(url):
+async def parse_id(url):
     """
     解析文章链接id，返回id长度
     :param url:
@@ -16,14 +16,14 @@ def parse_id(url):
     for _str in str_list:
         if _str.isdigit():
             digit_list.append(_str)
-    id_list = spell_check(str_list)
+    id_list = await spell_check(str_list)
     id_list.extend(digit_list)
     if not id_list:
         return 0
     return len(max(id_list, key=len))
 
 
-def verify_obvious_article_url(url):
+async def verify_obvious_article_url(url):
     """
     判断给定的URL是否为文章链接
     :param url:
@@ -39,7 +39,7 @@ def verify_obvious_article_url(url):
             return True
 
 
-def parse_article_list(page_html, url):
+async def parse_article_list(page_html, url):
     """
     解析文章列表西文章url以及文章标题
     :param page_html:
@@ -64,12 +64,12 @@ def parse_article_list(page_html, url):
     result_list = []
     id_length_dict = dict()
     for a in _a_list:
-        if verify_obvious_article_url(a[0]):
+        if await verify_obvious_article_url(a[0]):
             if not a[0].startswith('http'):
                 a[0] = urljoin(url, a[0])
             result_list.append({"title": a[1], "url": a[0]})
 
-        id_length = parse_id(a[0])
+        id_length = await parse_id(a[0])
         # print(id_length)
         if id_length in id_length_dict.keys():
             id_length_dict[id_length] += 1
@@ -79,7 +79,7 @@ def parse_article_list(page_html, url):
     max_id_length = max([{'length': x, 'times': y} for x, y in id_length_dict.items()], key=lambda x: x['times'])
     if max_id_length['length'] > 3:
         for a in _a_list:
-            if parse_id(a[0]) == max_id_length['length'] and a[0] not in [x['url'] for x in result_list]:
+            if await parse_id(a[0]) == max_id_length['length'] and a[0] not in [x['url'] for x in result_list]:
                 # print('a', a)
                 a[1] = re.sub(r'<[^>]+>', "", a[1]).strip()
                 if not a[0].startswith('http'):

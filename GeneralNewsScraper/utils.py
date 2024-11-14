@@ -1,11 +1,10 @@
-import time
 from urllib.parse import urlparse
 from spellchecker import SpellChecker
 
 spell = SpellChecker(language='en')
 
 
-def is_valid_url(url):
+async def is_valid_url(url):
     """
     判断给定的字符串是否为一个有效的URL。
     :param url: 要检查的字符串
@@ -18,7 +17,7 @@ def is_valid_url(url):
         return False
 
 
-def spell_check(words: list):
+async def spell_check(words: list):
     """
     检查单词拼写是否正确，返回错误的单词
     :param words:
