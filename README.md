@@ -86,8 +86,8 @@ from GeneralNewsScraper import GNS
 
 _html = """ html示例 """
 # html非必传
-article_info = GNS.article_parse_all(url="https://www.voachinese.com/", html=_html)
-print(article_info)
+article_info_list = GNS.article_parse_all(url="https://www.voachinese.com/", html=_html)
+print(article_info_list)
 
 ```
 
