@@ -1,8 +1,9 @@
 import os
 from playwright.async_api import async_playwright
-import aiofiles
 
 current_dir_path = os.path.abspath(os.path.dirname(__file__))
+with open(f'{current_dir_path}/stealth.min.js', 'r') as f:
+    js_code = f.read()
 
 
 class BrowserContext:
@@ -21,17 +22,20 @@ class BrowserContext:
             browser = await p.chromium.launch(headless=True)
             context = await browser.new_context()
             page = await context.new_page()
-            async with aiofiles.open(f'{current_dir_path}/stealth.min.js', 'r') as f:
-                js_code = await f.read()
-                await page.add_init_script(js_code)
             try:
-                await page.goto(url, wait_until='domcontentloaded', timeout=30000)
-                return await page.content(), page.url
-            except Exception as e:
-                print(f"Failed to load URL, trying again with domcontentloaded mode: {e}")
+                await page.add_init_script(js_code)
                 try:
                     await page.goto(url, wait_until='domcontentloaded', timeout=30000)
                     return await page.content(), page.url
                 except Exception as e:
-                    print(f"Failed to load URL after retry: {e}")
-                    raise e
+                    print(f"Failed to load URL, trying again with domcontentloaded mode: {e}")
+                    try:
+                        await page.goto(url, wait_until='domcontentloaded', timeout=30000)
+                        return await page.content(), page.url
+                    except Exception as e:
+                        print(f"Failed to load URL after retry: {e}")
+                        raise e
+            finally:
+                await page.close()
+                await context.close()
+                await browser.close()
